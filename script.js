@@ -515,3 +515,110 @@ if (tickerTrack) {
     window.addEventListener("resize", updateTicker);
   }
 }
+
+// ✧ MAGIC Y2K STAR RAIN ✧
+
+const starRainButton = document.getElementById("start");
+
+let starRainTimer = null;
+let starRainLayer = null;
+
+function createRainStar(container) {
+  const star = document.createElement("span");
+
+  const colors = [
+    "#ffffff",
+    "#ff8ad8",
+    "#ffc6ef",
+    "#8deaff",
+    "#d5a2ff",
+    "#ffe98a"
+  ];
+
+  const shapes = ["✦", "✧", "★", "✳", "⋆"];
+
+  star.className = "rain-star";
+
+  star.textContent =
+    shapes[Math.floor(Math.random() * shapes.length)];
+
+  star.style.setProperty(
+    "--star-color",
+    colors[Math.floor(Math.random() * colors.length)]
+  );
+
+  star.style.left = Math.random() * 100 + "%";
+
+  star.style.fontSize =
+    (6 + Math.random() * 17) + "px";
+
+  star.style.setProperty(
+    "--fall-time",
+    (2.5 + Math.random() * 2.5) + "s"
+  );
+
+  star.style.setProperty(
+    "--drift",
+    (Math.random() * 180 - 90) + "px"
+  );
+
+  star.style.setProperty(
+    "--spin",
+    (Math.random() * 720 - 360) + "deg"
+  );
+
+  container.appendChild(star);
+
+  star.addEventListener("animationend", () => {
+    star.remove();
+  });
+}
+
+starRainButton?.addEventListener("click", () => {
+
+  // При повторном нажатии запускаем новый дождь
+  if (starRainTimer !== null) {
+    clearInterval(starRainTimer);
+  }
+
+  if (starRainLayer) {
+    starRainLayer.remove();
+  }
+
+  starRainLayer = document.createElement("div");
+  starRainLayer.className = "star-rain";
+
+  document.body.appendChild(starRainLayer);
+
+  const currentLayer = starRainLayer;
+
+  // Первые звёзды появляются сразу
+  for (let i = 0; i < 35; i++) {
+    createRainStar(currentLayer);
+  }
+
+  // Постоянный поток звёзд
+  starRainTimer = setInterval(() => {
+    for (let i = 0; i < 9; i++) {
+      createRainStar(currentLayer);
+    }
+  }, 80);
+
+  // Через 5 секунд дождь прекращается
+  setTimeout(() => {
+    if (starRainLayer !== currentLayer) return;
+
+    clearInterval(starRainTimer);
+    starRainTimer = null;
+
+    // Даём последним звёздам упасть
+    setTimeout(() => {
+      currentLayer.remove();
+
+      if (starRainLayer === currentLayer) {
+        starRainLayer = null;
+      }
+    }, 5500);
+
+  }, 5000);
+});

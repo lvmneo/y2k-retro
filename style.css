@@ -16,12 +16,133 @@ body{background:#a650c5 url('assets/sky.png') center center/cover no-repeat fixe
 .statusbar{border-top:1px solid #c5c2b8;padding:4px 8px;color:#555;font-size:11px;background:#ece9d8}
 h1{margin:0 0 12px;font-size:21px;color:#1766c5}h2{margin:0 0 15px;font-size:21px;color:#1766c5}
 /* Welcome: чуть уже, чем старое окно */
+
 .welcome{width:min(490px,100%);align-self:center}
-.welcome-body{padding:12px 16px 17px}.rings{height:17px;margin-bottom:12px;background:url('https://blob.gifcities.org/gifcities/RMXNNFYXNESNRWMKAGUX4RJCDGERPZAH.gif') repeat-x left center;background-size:auto 17px}
+
+.welcome-body{padding:12px 16px 17px}
+
+
+/* WELCOME — сохраняем оригинальную XP-панель */
+
+.welcome .titlebar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 32px;
+  padding: 3px 6px 3px 9px;
+
+  background: linear-gradient(
+    #7bb8ff 0%,
+    #236be5 17%,
+    #0754d1 60%,
+    #003caa 93%,
+    #2b74e7 100%
+  );
+}
+
+.welcome .titlebar > span:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Кнопки строго справа */
+
+.welcome .xp-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.welcome .xp-min,
+.welcome .xp-red-x {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 22px;
+  padding: 0;
+  color: white;
+  border: 1px solid white;
+  border-radius: 4px;
+  cursor: pointer;
+  font: bold 16px Tahoma, sans-serif;
+}
+
+.welcome .xp-min {
+  background: linear-gradient(#a6c9ff, #316bd2);
+}
+
+.welcome .xp-red-x {
+  background: linear-gradient(
+    #ffb2a2,
+    #e54826 60%,
+    #b82013
+  );
+}
+
+/* Пляж Sonic Adventure внутри окна */
+
+.welcome .welcome-body {
+  background: url("assets/wb.jpg")
+    center center / cover no-repeat;
+}
+
+/* Полупрозрачное облачко с текстом */
+
+
+.welcome .speech-bubble {
+  font-family: "Comic Sans MS", cursive;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #6742a0;
+}
+
+/* Выделение первой строчки */
+
+.welcome .speech-bubble strong {
+  color: #e25ca8;
+  font-size: 19px;
+  text-shadow: 1px 1px 0 #ffffff;
+}
+.welcome .speech-bubble::before {
+  background: rgba(245, 237, 255, 0.88);
+}
+
+.rings{height:17px;margin-bottom:12px;background:url('https://blob.gifcities.org/gifcities/RMXNNFYXNESNRWMKAGUX4RJCDGERPZAH.gif') repeat-x left center;background-size:auto 17px}
 .chao-dialogue{display:flex;align-items:center;gap:14px}.chao{width:125px;max-height:160px;object-fit:contain;flex-shrink:0;image-rendering:pixelated}.speech-bubble{position:relative;flex:1;padding:12px 13px;background:#f5edff;border:2px solid #b8a2e3;border-radius:12px;box-shadow:inset 0 0 0 2px #fff;color:#543e84}.speech-bubble:before{content:"";position:absolute;left:-10px;top:40%;width:15px;height:15px;background:#f5edff;border-left:2px solid #b8a2e3;border-bottom:2px solid #b8a2e3;transform:rotate(45deg)}.speech-bubble p{margin:7px 0}
 /* Два окна рядом; Эми находится рядом со списком, не в углу страницы */
 .two-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,340px);gap:24px;align-items:start}
-.favorites-area{position:relative;min-width:0;padding-right:130px;min-height:365px}.favorites{width:100%}.favorites-body{height:320px;overflow-y:auto;background:linear-gradient(145deg,#ffe6f1,#ffc9e5);border:4px ridge #f5b3df;padding:18px 13px}.favorites-body h2{font-family:Georgia,serif;font-size:23px;font-style:italic;color:#a13d88}
+.favorites-area{position:relative;min-width:0;padding-right:130px;min-height:365px}.favorites{width:100%}
+
+.favorites-body {
+  height: 320px;
+  overflow-y: auto;
+
+  background-color: #b75cde;
+  background-image: url("assets/79.gif");
+  background-position: center;
+  background-size: auto;
+  background-repeat: repeat;
+
+  border: 4px ridge #f5b3df;
+  padding: 14px 11px;
+}
+.favorites-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 1;
+  
+}
+.favorites-body h2{font-family:Georgia,serif;font-size:23px;font-style:italic;color:#a13d88}
 .love-list{list-style:none;margin:0;padding:0}.love-list li{position:relative;min-height:30px;padding-left:35px;margin:0 0 14px;font:16px/1.45 Georgia,serif;color:#673765}.love-list li:before{content:"";position:absolute;left:0;top:0;width:27px;height:27px;background:url('https://blob.gifcities.org/gifcities/7VBK4SIK2GS4FSSEZA5FGXFZUFI4PUSB.gif') center/contain no-repeat;image-rendering:pixelated}
 .amy {
   position: absolute;
@@ -269,104 +390,75 @@ transform-origin: center;
    V2 — ТОЛЬКО ТОЧЕЧНЫЕ ИЗМЕНЕНИЯ, СТАРЫЙ ДИЗАЙН СОХРАНЁН
    ============================================================ */
 
-/* Любимые вещи: карточки как в блоке Recently Played Music */
-.love-cards {
+
+/* ==========================================
+   THINGS I LOVE — ПО ЦЕНТРУ
+   ========================================== */
+
+
+/* ==========================================
+   THINGS I LOVE — GIF GALLERY
+   ========================================== */
+
+/* ==========================================
+   THINGS I LOVE — GIF GALLERY
+   ========================================== */
+
+
+/* Галерея точно как на образце */
+
+
+.favorites-gallery {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 10px 0;
+}
+
+.favorites-gallery img {
+  display: block;
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  object-fit: contain;
+  image-rendering: auto;
+  border: none;
+  box-shadow: none;
+  transform: none;
+}
+
+.gif-item {
   display: flex;
   flex-direction: column;
-  gap: 9px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.love-cards li {
-  display: flex;
   align-items: center;
-  gap: 14px;
-
-  min-height: 82px;
-  margin: 0;
-  padding: 9px 12px;
-
-  background: linear-gradient(100deg, #f0faff, #d9fff0);
-  border: 2px solid #9acfff;
-  border-radius: 7px;
-
-  color: #1761bb;
-  box-shadow: inset 0 1px 0 white;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-cursor: pointer;
-position: relative;
-}
-
-.love-cards li:nth-child(even) {
-  background: linear-gradient(100deg, #fff6ff, #e9f4ff);
-}
-
-.love-cards li::before {
-  content: none;
-}
-
-/* Крупные картинки */
-
-.love-thumb {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  flex: 0 0 72px;
-  width: 72px;
-  height: 65px;
-
-  overflow: hidden;
-  background: #fff;
-  border: 1px solid #c8d6ef;
-  border-radius: 5px;
-}
-
-.love-thumb img {
-  display: block;
-  width: auto;
-  height: auto;
-  max-width: 68px;
-  max-height: 61px;
-  object-fit: contain;
-  image-rendering: pixelated;
-}
-
-/* Плавное приближение карточки */
-
-.love-cards li:hover {
-  transform: scale(1.035);
-  box-shadow:
-    0 4px 12px rgba(92, 82, 210, 0.25),
-    0 0 10px rgba(255, 160, 225, 0.5);
-  z-index: 2;
-}
-
-/* Плавное увеличение картинки */
-
-.love-thumb img {
-  transition: transform 0.3s ease;
-}
-
-.love-cards li:hover .love-thumb img {
-  transform: scale(1.12);
-}
-
-/* Увеличенные надписи */
-
-.love-label {
+  gap: 2px;
   min-width: 0;
-  font-family: Tahoma, Verdana, sans-serif;
-  font-size: 17px;
-  font-weight: bold;
-  line-height: 1.4;
-  color: #1761bb;
-  overflow-wrap: anywhere;
 }
-.love-thumb img { display: block; max-width: 45px; max-height: 37px; width: auto; height: auto; object-fit: contain; image-rendering: pixelated; }
-.love-placeholder { font-size: 27px; line-height: 1; }
+
+.gif-item img {
+  display: block;
+  width: 82px;
+  height: 40px;
+  object-fit: fill;
+  image-rendering: pixelated;
+  border: 1px solid #000;
+  box-shadow: none;
+}
+
+.gif-item span {
+  color: #000;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  font-weight: bold;
+  line-height: 1;
+  letter-spacing: 2px;
+}
+
+.gif-item img:hover {
+  transform: none;
+}
+
 
 .xp-controls { display: flex; gap: 3px; border: 0; padding: 0; background: none; }
 .xp-min,.xp-red-x { display:grid; place-items:center; width: 23px; height: 22px; border: 1px solid white; border-radius: 4px; box-shadow: inset 0 1px 2px #ffffffb0; font:bold 16px Tahoma,sans-serif; }
@@ -422,28 +514,90 @@ position: relative;
 /* Заголовок My Little Obsessions */
 /* Контейнер заголовка */
 .favorites-heading {
-  position: relative;
-  width: 100%;
-  height: 105px;
-  overflow: hidden;
-
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-
-  margin: 0 0 12px;
+  align-items: center;
+  width: 100%;
+  height: 130px;
+  margin-bottom: 12px;
+  overflow: hidden;
 }
 
-/* Анимированная надпись */
+.favorites-gif-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Крупная надпись с анимацией */
+
+
 .favorites-heading-gif {
   display: block;
-  width: 310px;
+  width: 390px;
   max-width: 100%;
   height: auto;
-
   object-fit: contain;
-  clip-path: none;
-  margin: 0;
+
+  animation:
+    obsessionFloat 3s ease-in-out infinite,
+    obsessionGlitter 2s linear infinite;
+}
+
+/* Плавное движение */
+
+@keyframes obsessionFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* Переливание цветов и свечение */
+
+@keyframes obsessionGlitter {
+  0% {
+    filter:
+      brightness(1)
+      saturate(1.2)
+      drop-shadow(0 0 3px #ff65dd);
+  }
+
+  25% {
+    filter:
+      brightness(1.5)
+      saturate(1.8)
+      hue-rotate(20deg)
+      drop-shadow(0 0 9px #ffb5ff);
+  }
+
+  50% {
+    filter:
+      brightness(1.2)
+      saturate(1.5)
+      hue-rotate(-20deg)
+      drop-shadow(0 0 12px #aafaff);
+  }
+
+  75% {
+    filter:
+      brightness(1.6)
+      saturate(2)
+      hue-rotate(35deg)
+      drop-shadow(0 0 9px #ff8aff);
+  }
+
+  100% {
+    filter:
+      brightness(1)
+      saturate(1.2)
+      drop-shadow(0 0 3px #ff65dd);
+  }
 }
 
 /* ==========================================
@@ -804,4 +958,65 @@ position: relative;
   top: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
+}
+
+/* ✧ Y2K STAR RAIN ✧ */
+
+.star-rain {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 99999;
+}
+
+.rain-star {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  line-height: 1;
+  font-family: Georgia, serif;
+  pointer-events: none;
+
+  color: var(--star-color);
+
+  text-shadow:
+    0 0 5px currentColor,
+    0 0 12px currentColor,
+    0 0 20px currentColor;
+
+  animation:
+    starFall var(--fall-time) linear forwards;
+}
+
+@keyframes starFall {
+  0% {
+    transform:
+      translate3d(0, -30px, 0)
+      rotate(0deg) scale(0.5);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  35% {
+    filter: brightness(2.5);
+  }
+
+  65% {
+    filter: brightness(1);
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform:
+      translate3d(var(--drift), 110vh, 0)
+      rotate(var(--spin)) scale(0.8);
+    opacity: 0;
+  }
 }
