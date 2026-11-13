@@ -622,3 +622,66 @@ starRainButton?.addEventListener("click", () => {
 
   }, 5000);
 });
+
+
+/* ♡ Y2K GLITTER CURSOR TRAIL ♡ */
+
+(() => {
+  const symbols = ["♡", "♥", "✦", "✧", "⋆", "✳"];
+  const colors = [
+    "#ff69b4",
+    "#ffb6e9",
+    "#ffffff",
+    "#a5efff",
+    "#d8a5ff"
+  ];
+
+  let lastTime = 0;
+
+  document.addEventListener("pointermove", (event) => {
+    if (event.pointerType !== "mouse" &&
+        event.pointerType !== "pen") return;
+
+    const now = performance.now();
+
+    if (now - lastTime < 25) return;
+    lastTime = now;
+
+    for (let i = 0; i < 3; i++) {
+      const star = document.createElement("span");
+
+      star.className = "cursor-glitter";
+
+      star.textContent =
+        symbols[Math.floor(Math.random() * symbols.length)];
+
+      star.style.color =
+        colors[Math.floor(Math.random() * colors.length)];
+
+      star.style.fontSize =
+        (8 + Math.random() * 12) + "px";
+
+      star.style.left =
+        (event.clientX + Math.random() * 14 - 7) + "px";
+
+      star.style.top =
+        (event.clientY + Math.random() * 14 - 7) + "px";
+
+      star.style.setProperty(
+        "--dx",
+        (Math.random() * 50 - 25) + "px"
+      );
+
+      star.style.setProperty(
+        "--dy",
+        (-15 - Math.random() * 45) + "px"
+      );
+
+      document.body.appendChild(star);
+
+      star.addEventListener("animationend", () => {
+        star.remove();
+      });
+    }
+  });
+})();
