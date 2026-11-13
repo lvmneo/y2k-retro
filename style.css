@@ -1,0 +1,558 @@
+/* MY PIXEL WORLD — сохраняем исходный фон и XP-стиль */
+:root{--xp-blue:#0757cb;--xp-light:#e8f2ff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0;min-height:100%;font-family:Tahoma,Verdana,sans-serif}
+body{background:#a650c5 url('assets/sky.png') center center/cover no-repeat fixed;color:#203974}
+/* Ничего не скрываем: страницу можно прокручивать вниз */
+.blog-shell{position:relative;width:min(1060px,calc(100% - 52px));margin:36px auto 95px;padding:12px 20px 28px;background:rgba(230,222,255,.20);border:1px solid rgba(255,255,255,.65);border-radius:8px;box-shadow:0 12px 35px #25105760;backdrop-filter:blur(11px);-webkit-backdrop-filter:blur(11px);z-index:2}
+.blog-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 13px;margin-bottom:18px;background:rgba(255,255,255,.30);border:2px ridge #c4eaff;color:#fff;text-shadow:1px 2px #7343a1;font-size:15px;font-weight:bold}
+.blog-top nav{display:flex;gap:14px;flex-wrap:wrap}.blog-top a{color:#fff;text-shadow:1px 1px #55429c;font-size:12px}
+.blog-content{display:flex;flex-direction:column;align-items:stretch;gap:28px}
+.xp-window{position:relative;min-width:0;background:#ece9d8;border:3px solid var(--xp-blue);border-radius:9px 9px 3px 3px;box-shadow:2px 4px 0 #001b61,0 10px 23px #140d5d55;overflow:hidden;image-rendering:auto}
+.titlebar{display:flex;align-items:center;justify-content:space-between;gap:7px;min-height:32px;padding:3px 6px 3px 9px;color:#fff;font-size:13px;font-weight:bold;background:linear-gradient(#7bb8ff 0%,#236be5 17%,#0754d1 60%,#003caa 93%,#2b74e7 100%);user-select:none}
+.window-buttons{border:1px solid #fff;border-radius:4px;padding:2px 6px;background:linear-gradient(#a6c9ff,#316bd2);white-space:nowrap}
+.window-body{padding:17px;background:linear-gradient(145deg,#fffdf8,#e8f2ff);font-size:14px;line-height:1.5}
+.statusbar{border-top:1px solid #c5c2b8;padding:4px 8px;color:#555;font-size:11px;background:#ece9d8}
+h1{margin:0 0 12px;font-size:21px;color:#1766c5}h2{margin:0 0 15px;font-size:21px;color:#1766c5}
+/* Welcome: чуть уже, чем старое окно */
+.welcome{width:min(490px,100%);align-self:center}
+.welcome-body{padding:12px 16px 17px}.rings{height:17px;margin-bottom:12px;background:url('https://blob.gifcities.org/gifcities/RMXNNFYXNESNRWMKAGUX4RJCDGERPZAH.gif') repeat-x left center;background-size:auto 17px}
+.chao-dialogue{display:flex;align-items:center;gap:14px}.chao{width:125px;max-height:160px;object-fit:contain;flex-shrink:0;image-rendering:pixelated}.speech-bubble{position:relative;flex:1;padding:12px 13px;background:#f5edff;border:2px solid #b8a2e3;border-radius:12px;box-shadow:inset 0 0 0 2px #fff;color:#543e84}.speech-bubble:before{content:"";position:absolute;left:-10px;top:40%;width:15px;height:15px;background:#f5edff;border-left:2px solid #b8a2e3;border-bottom:2px solid #b8a2e3;transform:rotate(45deg)}.speech-bubble p{margin:7px 0}
+/* Два окна рядом; Эми находится рядом со списком, не в углу страницы */
+.two-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,340px);gap:24px;align-items:start}
+.favorites-area{position:relative;min-width:0;padding-right:130px;min-height:365px}.favorites{width:100%}.favorites-body{height:320px;overflow-y:auto;background:linear-gradient(145deg,#ffe6f1,#ffc9e5);border:4px ridge #f5b3df;padding:18px 13px}.favorites-body h2{font-family:Georgia,serif;font-size:23px;font-style:italic;color:#a13d88}
+.love-list{list-style:none;margin:0;padding:0}.love-list li{position:relative;min-height:30px;padding-left:35px;margin:0 0 14px;font:16px/1.45 Georgia,serif;color:#673765}.love-list li:before{content:"";position:absolute;left:0;top:0;width:27px;height:27px;background:url('https://blob.gifcities.org/gifcities/7VBK4SIK2GS4FSSEZA5FGXFZUFI4PUSB.gif') center/contain no-repeat;image-rendering:pixelated}
+.amy{position:absolute;right:-10px;bottom:15px;width:155px;max-height:310px;object-fit:contain;image-rendering:pixelated;pointer-events:none;z-index:2}
+/* Только My Buttons — перетаскиваемое окно. По умолчанию оно стоит в колонке */
+.buttons-slot{min-width:0;min-height:260px}.buttons-window{width:100%;max-width:340px;z-index:8}.buttons-window.is-floating{position:fixed;width:320px;max-width:calc(100vw - 16px);z-index:2000}.titlebar.draggable{cursor:grab;touch-action:none}.titlebar.draggable:active{cursor:grabbing}.titlebar small{font-size:10px;font-weight:normal;color:#dceeff}.xp-close{font:bold 16px Tahoma;color:#fff;background:linear-gradient(#ffb2a2,#e54826 60%,#b82013);border:1px solid #fff;border-radius:4px;width:25px;height:23px;cursor:pointer}.buttons-body{padding:13px;background:#d4d0c8;max-height:245px;overflow-y:auto}.buttons-grid{display:grid;grid-template-columns:repeat(3,88px);gap:6px;justify-content:center}.buttons-grid img{display:block;width:88px;height:31px;object-fit:fill;image-rendering:auto}
+/* Сохраняем красивую движущуюся ленту с GIF */
+.ticker-section{width:min(820px,100%);align-self:center}.ticker-outer{padding:8px;background:#b4f8ff;border:3px ridge #76b9ff;box-shadow:0 4px 13px #140d5d55}.ticker-window{padding:10px;overflow:hidden;background:#e5ffff url('https://blob.gifcities.org/gifcities/HNBVEBUQDHWBKCPZBI67NWVEQP73RUUE.gif') repeat}
+
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker 22s linear infinite;
+}
+
+.ticker-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  padding-right: 12px;
+}
+.ticker-group img{width:100px;height:56px;object-fit:contain;flex-shrink:0;background:#e8faff;border:2px ridge #82cfff;image-rendering:pixelated}
+ @keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+ }
+.ticker-section:hover 
+
+/* Куклы: одно большое XP-окно, внутри мини-окна-карточки */
+.dolls{width:100%}.dolls-body{background:linear-gradient(145deg,#f9efff,#dfeaff)}.dolls-body>p{margin-top:-4px;color:#775b9e}.doll-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}.doll-card{min-width:0;border:2px solid #5765a4;background:#f8f6ff;box-shadow:3px 4px 0 #8b81be}.mini-title{background:linear-gradient(90deg,#6978df,#b9b6fa);color:#fff;font:bold 12px Tahoma;padding:6px 8px}
+
+.doll-picture {
+  height: 225px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 9px;
+
+ background-image: url("https://i.imgur.com/d0m3ogH.gif");
+background-position: center;
+background-size: auto;
+background-repeat: repeat;
+image-rendering: pixelated;
+}
+
+/* Зебровая рамка вокруг карточек Bratz */
+
+.doll-card {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+  border: none;
+  box-shadow: none;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+transform: scale(1);
+transform-origin: center;
+}
+
+.doll-card::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  background: url("assets/nobg.png") center / 100% 100% no-repeat;
+  pointer-events: none;
+  z-index: 5;
+}
+.doll-card:hover {
+  transform: scale(1.08);
+  z-index: 10;
+}
+.doll-picture img{max-width:100%;max-height:100%;object-fit:contain;image-rendering:auto}
+
+.doll-link{text-align:center}.doll-link a{color:#3758bc;font-weight:bold}.doll-link small{color:#766783}.mini-status{font-size:11px;padding:5px 8px;color:#6c548d;background:#ece9d8}
+.heart-divider{height:40px;width:100%;background:url('https://blob.gifcities.org/gifcities/Q53X7XM3J2BDC55LQVX3ES4BJH4WVEGP.gif') left center repeat-x;background-size:auto 35px}.blog-footer{text-align:center;font:italic 15px Georgia;color:#fff;text-shadow:1px 2px #6848a0}
+/* Планета отдельно от блога, с возможностью перетаскивания */
+.planet{position:fixed;left:calc(50% + 480px);top:100px;width:160px;height:auto;z-index:100;cursor:grab;touch-action:none;user-select:none;-webkit-user-drag:none;image-rendering:pixelated;animation:float 4s ease-in-out infinite}.planet:active{cursor:grabbing}@keyframes float{50%{transform:translateY(-12px)}}
+/* Вертикальные линии пузырьков по бокам всей длинной страницы */
+.bubble-column{position:absolute;top:110px;bottom:0;width:55px;z-index:1;pointer-events:none;background-image:url('https://blob.gifcities.org/gifcities/7JCDDRKNLFDFIWTCVTO5HY5BOROXDGSX.gif');background-repeat:repeat-y;background-position:center top;background-size:55px auto}.bubble-left{left:8px}.bubble-right{right:8px}
+.taskbar{position:fixed;z-index:9999;bottom:0;left:0;right:0;height:39px;display:flex;align-items:stretch;gap:6px;padding-right:10px;color:#fff;background:linear-gradient(#438efa,#175bd6 20%,#1243b4 75%,#0b318f);box-shadow:0 -2px 5px #002f83}.taskbar button{cursor:pointer;color:#fff;font:bold 12px Tahoma}.start{padding:0 20px;border:0;border-radius:0 13px 13px 0;background:linear-gradient(#8de378,#398b2d 50%,#277622)}#show-buttons{align-self:center;height:30px;padding:0 12px;border:1px solid #72b5ff;border-radius:3px;background:#2464c8}.clock{margin-left:auto;display:grid;place-items:center;padding:0 12px;background:#2588dc;font-size:12px}
+@media(max-width:800px){.blog-shell{width:calc(100% - 24px);padding:10px}.two-columns{grid-template-columns:1fr}.favorites-area{padding-right:125px}.buttons-slot{min-height:0}.buttons-window{max-width:340px}.planet{width:110px;left:auto;right:8px;top:55px}.bubble-column{width:22px;background-size:25px auto}.bubble-left{left:0}.bubble-right{right:0}.blog-top{flex-wrap:wrap}.doll-grid{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}}
+@media(max-width:450px){.chao-dialogue{gap:7px}.chao{width:80px}.speech-bubble{padding:9px;font-size:12px}.favorites-area{padding-right:80px}.amy{width:105px;right:-12px}.favorites-body h2{font-size:20px}.buttons-grid{grid-template-columns:repeat(3,88px);gap:3px}.buttons-body{padding:6px}}
+@media(prefers-reduced-motion:reduce){.ticker-track,.planet{animation:none}}
+
+
+/* ============================================================
+   V2 — ТОЛЬКО ТОЧЕЧНЫЕ ИЗМЕНЕНИЯ, СТАРЫЙ ДИЗАЙН СОХРАНЁН
+   ============================================================ */
+
+/* Любимые вещи: карточки как в блоке Recently Played Music */
+.favorites-body { padding: 14px 11px; }
+.favorites-body h2 { margin: 2px 0 14px 5px; }
+.love-cards { display: flex; flex-direction: column; gap: 6px; }
+.love-cards li {
+  display: flex; align-items: center; gap: 9px;
+  min-height: 53px; margin: 0; padding: 5px 8px;
+  background: linear-gradient(100deg, #f0faff, #d9fff0);
+  border: 2px solid #9acfff; border-radius: 7px;
+  color: #1761bb; font: bold 14px/1.3 Tahoma,Verdana,sans-serif;
+  box-shadow: inset 0 1px 0 white;
+}
+.love-cards li:nth-child(2n) { background: linear-gradient(100deg,#fff6ff,#e9f4ff); }
+.love-cards li::before { content: none; }
+.love-thumb {
+  display: grid; place-items: center; flex: 0 0 47px;
+  width: 47px; height: 39px; overflow: hidden;
+  background: #fff; border: 1px solid #c8d6ef; border-radius: 4px;
+}
+.love-thumb img { display: block; max-width: 45px; max-height: 37px; width: auto; height: auto; object-fit: contain; image-rendering: pixelated; }
+.love-placeholder { font-size: 27px; line-height: 1; }
+.love-label { min-width: 0; overflow-wrap: anywhere; }
+.xp-controls { display: flex; gap: 3px; border: 0; padding: 0; background: none; }
+.xp-min,.xp-red-x { display:grid; place-items:center; width: 23px; height: 22px; border: 1px solid white; border-radius: 4px; box-shadow: inset 0 1px 2px #ffffffb0; font:bold 16px Tahoma,sans-serif; }
+.xp-min { background:linear-gradient(#a6c9ff,#316bd2); }
+.xp-red-x { background:linear-gradient(#ffb2a2,#e54826 60%,#b82013); }
+/* Заголовок окна статичный: крестик — оформление XP, не закрывает блок блога. */
+
+/* Декор приветствия: не перекрывает речь Чао */
+.welcome-stickers { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:8px 3px 0; }
+.welcome-stickers img { max-width:42%; max-height:72px; object-fit:contain; image-rendering:pixelated; }
+
+/* GIF у My Buttons чуть перекрывает нижнюю рамку */
+.buttons-slot { position:relative; padding-bottom:48px; }
+.buttons-overlap-gif { position:absolute; top:205px; right:-10px; max-width:160px; max-height:125px; object-fit:contain; image-rendering:pixelated; pointer-events:none; z-index:9; }
+
+/* Лента растягивается ровно до внутренних краёв рамки блога */
+.ticker-section { width:calc(100% + 40px); max-width:none; margin-left:-20px; margin-right:-20px; align-self:stretch; }
+
+/* Чередующиеся blinkies между лентой и куклами */
+.blinkie-divider { width:100%; padding:8px 6px; overflow:hidden; background:rgba(240,255,255,.38); border:2px ridge #b8e8ff; }
+.blinkie-pair { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px; }
+.blinkie-pair img { max-width:145px; max-height:60px; object-fit:contain; image-rendering:pixelated; }
+
+/* После сердечек — движущиеся значки blinkies.cafe */
+.badge-marquee { width:100%; overflow:hidden; padding:8px 0; background:rgba(255,255,255,.2); }
+.badge-track { display:flex; width:max-content; animation:badgeSlide 17s linear infinite; }
+.badge-group { display:flex; align-items:center; gap:18px; flex-shrink:0; padding-right:18px; }
+.badge-group img { display:block; max-height:65px; width:auto; image-rendering:pixelated; }
+.badge-marquee:hover .badge-track { animation-play-state:paused; }
+@keyframes badgeSlide { to { transform:translateX(-50%); } }
+
+@media(max-width:800px) { .ticker-section { width:calc(100% + 20px); margin-left:-10px; margin-right:-10px; } .buttons-overlap-gif { top:205px; right:0; } }
+@media(prefers-reduced-motion:reduce) { .badge-track { animation:none; } }
+/* Заголовок My Little Obsessions */
+/* Контейнер заголовка */
+.favorites-heading {
+  position: relative;
+  width: 100%;
+  height: 105px;
+  overflow: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  margin: 0 0 12px;
+}
+
+/* Анимированная надпись */
+.favorites-heading-gif {
+  display: block;
+  width: 310px;
+  max-width: 100%;
+  height: auto;
+
+  object-fit: contain;
+  clip-path: none;
+  margin: 0;
+}
+
+/* ==========================================
+   ДЕКОРАЦИИ ВОКРУГ ОКНА ПРИВЕТСТВИЯ
+   ========================================== */
+
+.welcome-decorations {
+  position: relative;
+  width: min(100%, 850px);
+  height: 0;
+  margin: 0 auto;
+  pointer-events: none;
+}
+
+.welcome-decorations img {
+  position: absolute;
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+
+  z-index: 50;
+}
+
+.welcome-decorations img:active {
+  cursor: grabbing;
+}
+
+/* Колечки — слева от окна */
+.decor-rings {
+  width: 145px;
+  left: 2%;
+  top: -330px;
+}
+
+/* Красная GIF — справа */
+.decor-red {
+  width: 90px;
+  right: 3%;
+  top: -160px;
+}
+
+/* Треугольники — справа внизу */
+.decor-triangles {
+  width: 85px;
+  right: 12%;
+  top: -85px;
+}
+
+@media (max-width: 700px) {
+  .decor-rings {
+    width: 20px;
+    left: 0;
+    top: -29px;
+  }
+
+  .decor-red {
+    width: 55px;
+    right: 0;
+    top: -140px;
+  }
+
+  .decor-triangles {
+    width: 55px;
+    right: 5%;
+    top: -65px;
+  }
+}
+
+
+
+/* ==========================================
+   RETRO MUSEUM — FIX
+   ========================================== */
+
+.retro-museum {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  margin: 20px auto 35px;
+  align-self: center;
+  overflow: hidden;
+}
+
+/* Фон музея */
+
+.retro-museum-body {
+  position: relative;
+  padding: 22px;
+  background-color: #101c20;
+  background-image: url("https://i.imgur.com/Y1bWCVQ.gif");
+  background-repeat: repeat;
+  background-position: left top;
+  background-size: auto;
+  overflow: hidden;
+}
+
+
+.museum-heading {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.museum-heading-gif {
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  object-fit: contain;
+  
+}
+.museum-intro {
+  color: #c9ffff;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+/* Сетка карточек */
+
+.museum-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* Прозрачные карточки */
+
+.museum-card {
+  min-width: 0;
+  padding: 5px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  text-align: center;
+}
+
+/* 3D-модели */
+
+.museum-viewer {
+  width: 100%;
+  height: 190px;
+  background: transparent;
+  border: none;
+  overflow: hidden;
+}
+
+.museum-viewer iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  pointer-events: none;
+}
+
+.museum-viewer img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: auto;
+}
+
+/* Подписи */
+
+.museum-label {
+  padding: 8px 0;
+  background: transparent;
+  color: #e48cff;
+  font-family: Georgia, serif;
+  font-size: 15px;
+  font-style: italic;
+  font-weight: bold;
+  text-shadow:
+    1px 1px 0 #21002e,
+    -1px -1px 0 #21002e;
+}
+
+/* Убираем размытие окна */
+
+.retro-museum,
+.retro-museum-body {
+  filter: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Кнопки Windows XP */
+
+.retro-museum .window-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.retro-museum .window-controls button {
+  width: 25px;
+  height: 23px;
+  color: white;
+  font: bold 16px Tahoma;
+  border: 1px solid white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.retro-museum .minimize {
+  background: linear-gradient(#a6c9ff, #316bd2);
+}
+
+.retro-museum .close {
+  background: linear-gradient(#ffb2a2, #e54826, #b82013);
+}
+
+/* Сворачивание и закрытие */
+
+.retro-museum.collapsed .retro-museum-body,
+.retro-museum.collapsed .statusbar {
+  display: none;
+}
+
+.retro-museum[hidden] {
+  display: none !important;
+}
+
+/* ==========================================
+   RETRO MUSEUM + WINAMP
+   ========================================== */
+
+.museum-player-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  align-items: start;
+  gap: 18px;
+  width: 100%;
+  margin: 25px auto;
+}
+
+/* Музей слева */
+
+.museum-player-layout .retro-museum {
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+}
+
+.museum-player-layout .retro-museum-body {
+  max-height: 440px;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.museum-player-layout .museum-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.museum-player-layout .museum-viewer {
+  height: 190px;
+}
+
+.museum-player-layout .museum-label {
+  font-size: 12px;
+}
+
+/* Winamp справа */
+
+.music-sidebar {
+  position: relative;
+  width: 310px;
+  min-width: 0;
+  min-height: 450px;
+  overflow: visible;
+}
+
+/* Адаптация */
+
+@media (max-width: 750px) {
+  .museum-player-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .music-sidebar {
+    width: min(100%, 310px);
+  }
+}
+
+@media (max-width: 700px) {
+  .museum-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .museum-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.music-sidebar {
+  position: relative;
+  width: 310px;
+  min-width: 310px;
+  min-height: 450px;
+  overflow: visible !important;
+}
+
+#winamp-player {
+  position: relative;
+  width: 275px;
+  min-height: 450px;
+  overflow: visible !important;
+}
+
+
+#webamp {
+   z-index: 5000 !important;
+  transform: translateX(45px) !important;
+  transform-origin: top left !important;
+}
+
+
+.doll-grid {
+  position: relative;
+  isolation: isolate;
+}
+
+.doll-card {
+  position: relative;
+  z-index: 2;
+}
+
+.doll-gif-center {
+  position: relative;
+  height: 285px;
+  min-width: 0;
+  background: transparent;
+  z-index: 1;
+  overflow: visible;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.doll-gif-center img {
+  position: absolute;
+  width: 270px;
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
