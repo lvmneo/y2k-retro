@@ -52,7 +52,7 @@ h1{margin:0 0 12px;font-size:21px;color:#1766c5}h2{margin:0 0 15px;font-size:21p
     transform: translateX(-50%);
   }
  }
-.ticker-section:hover 
+
 
 /* Куклы: одно большое XP-окно, внутри мини-окна-карточки */
 .dolls{width:100%}
@@ -62,6 +62,30 @@ h1{margin:0 0 12px;font-size:21px;color:#1766c5}h2{margin:0 0 15px;font-size:21p
   background-size: cover;
   background-repeat: no-repeat;
   min-height: 370px;
+}
+
+.dolls .titlebar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 32px;
+}
+
+.dolls .titlebar > span:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.dolls .titlebar .xp-controls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
+  flex: 0 0 auto;
 }
 
 .dolls-body h2 {
@@ -74,7 +98,9 @@ h1{margin:0 0 12px;font-size:21px;color:#1766c5}h2{margin:0 0 15px;font-size:21p
   text-shadow: 1px 1px 3px #16458d;
 }
 .dolls-body>p{margin-top:-4px;color:#775b9e}
-.doll-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}.doll-card{min-width:0;border:2px solid #5765a4;background:#f8f6ff;box-shadow:3px 4px 0 #8b81be}.mini-title{background:linear-gradient(90deg,#6978df,#b9b6fa);color:#fff;font:bold 12px Tahoma;padding:6px 8px}
+.doll-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.doll-card{min-width:0;border:2px solid #5765a4;background:#f8f6ff;box-shadow:3px 4px 0 #8b81be}
+.mini-title{background:linear-gradient(90deg,#6978df,#b9b6fa);color:#fff;font:bold 12px Tahoma;padding:6px 8px}
 
 .doll-picture {
   height: 225px;
@@ -119,7 +145,8 @@ transform-origin: center;
 }
 .doll-picture img{max-width:100%;max-height:100%;object-fit:contain;image-rendering:auto}
 
-.doll-link{text-align:center}.doll-link a{color:#3758bc;font-weight:bold}.doll-link small{color:#766783}.mini-status{font-size:11px;padding:5px 8px;color:#6c548d;background:#ece9d8}
+.doll-link{text-align:center}.doll-link a{color:#3758bc;font-weight:bold}
+.doll-link small{color:#766783}.mini-status{font-size:11px;padding:5px 8px;color:#6c548d;background:#ece9d8}
 .heart-divider{height:40px;width:100%;background:url('https://blob.gifcities.org/gifcities/Q53X7XM3J2BDC55LQVX3ES4BJH4WVEGP.gif') left center repeat-x;background-size:auto 35px}.blog-footer{text-align:center;font:italic 15px Georgia;color:#fff;text-shadow:1px 2px #6848a0}
 /* Планета отдельно от блога, с возможностью перетаскивания */
 .planet{position:fixed;left:calc(50% + 480px);top:100px;width:160px;height:auto;z-index:100;cursor:grab;touch-action:none;user-select:none;-webkit-user-drag:none;image-rendering:pixelated;animation:float 4s ease-in-out infinite}.planet:active{cursor:grabbing}@keyframes float{50%{transform:translateY(-12px)}}
