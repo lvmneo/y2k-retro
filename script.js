@@ -685,3 +685,17 @@ starRainButton?.addEventListener("click", () => {
     }
   });
 })();
+
+function updateBubbleHeight() {
+  const pageHeight = Math.max(
+    document.body.scrollHeight,
+    document.documentElement.scrollHeight
+  );
+
+  document.querySelectorAll(".bubble-column").forEach(column => {
+    column.style.height = pageHeight + "px";
+  });
+}
+
+window.addEventListener("load", updateBubbleHeight);
+window.addEventListener("resize", updateBubbleHeight);
