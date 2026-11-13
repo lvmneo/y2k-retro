@@ -55,7 +55,26 @@ h1{margin:0 0 12px;font-size:21px;color:#1766c5}h2{margin:0 0 15px;font-size:21p
 .ticker-section:hover 
 
 /* Куклы: одно большое XP-окно, внутри мини-окна-карточки */
-.dolls{width:100%}.dolls-body{background:linear-gradient(145deg,#f9efff,#dfeaff)}.dolls-body>p{margin-top:-4px;color:#775b9e}.doll-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}.doll-card{min-width:0;border:2px solid #5765a4;background:#f8f6ff;box-shadow:3px 4px 0 #8b81be}.mini-title{background:linear-gradient(90deg,#6978df,#b9b6fa);color:#fff;font:bold 12px Tahoma;padding:6px 8px}
+.dolls{width:100%}
+.dolls-body {
+  background-image: url("assets/winn.jpg");
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  min-height: 370px;
+}
+
+.dolls-body h2 {
+  color: #ffffff;
+  text-shadow: 2px 2px 3px #16458d;
+}
+
+.dolls-body > p {
+  color: #ffffff;
+  text-shadow: 1px 1px 3px #16458d;
+}
+.dolls-body>p{margin-top:-4px;color:#775b9e}
+.doll-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}.doll-card{min-width:0;border:2px solid #5765a4;background:#f8f6ff;box-shadow:3px 4px 0 #8b81be}.mini-title{background:linear-gradient(90deg,#6978df,#b9b6fa);color:#fff;font:bold 12px Tahoma;padding:6px 8px}
 
 .doll-picture {
   height: 225px;
