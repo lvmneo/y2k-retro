@@ -1,0 +1,446 @@
+
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pixel World — Hello Kitty on 3D GBA</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#a977cf,#271636 75%);color:#fff;font:15px Arial,sans-serif}
+main{max-width:1100px;margin:25px auto;padding:16px}
+h1{text-align:center;color:#ffe1fc;text-shadow:0 0 16px #ff8bd5}
+.layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(290px,.85fr);gap:18px}
+.panel{min-width:0;padding:17px;background:#251432d9;border:2px solid #e6b9ff;border-radius:18px}
+#viewer{height:560px;overflow:hidden;border-radius:12px;background:radial-gradient(circle,#9a67ba55,#140e1b66)}
+#viewer canvas{display:block;width:100%;height:100%}
+.tip{font-size:13px;color:#f4c7f6;line-height:1.5}
+button,input::file-selector-button{background:#f1b8fa;color:#37183c;border:0;border-radius:8px;padding:9px 12px;cursor:pointer}
+button{margin:3px}
+#game{width:100%;aspect-ratio:3/2;background:#100c19;border-radius:8px;overflow:hidden;position:relative}
+#game canvas{max-width:100%}
+#status,#model-status,#video-status{line-height:1.5;overflow-wrap:anywhere}
+input{max-width:100%}
+.controls-cal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.controls-cal label{display:flex;flex-direction:column;font-size:12px;color:#f4c7f6}
+.controls-cal input{width:100%}
+@media(max-width:780px){.layout{grid-template-columns:1fr}#viewer{height:420px}}
+</style>
+
+<script type="importmap">
+{
+  "imports":{
+    "three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+
+<body>
+<main>
+<h1>🎀 Pixel World — Hello Kitty GBA</h1>
+
+<div class="layout">
+  <section class="panel">
+    <h2>3D Game Boy Advance</h2>
+    <div id="viewer"></div>
+
+    <p id="model-status">Загружаем модель…</p>
+    <p id="video-status">Ожидаем запуск игры…</p>
+
+    <div class="controls-cal" id="calibration">
+      <label>X
+        <input id="sx" type="range" min="-0.025" max="0.025" step="0.0005" value="0">
+      </label>
+      <label>Y
+        <input id="sy" type="range" min="-0.025" max="0.035" step="0.0005" value="0.014">
+      </label>
+      <label>Ширина
+        <input id="sw" type="range" min="0.025" max="0.075" step="0.0005" value="0.052">
+      </label>
+      <label>Z
+        <input id="sz" type="range" min="0.007" max="0.030" step="0.0005" value="0.012">
+      </label>
+    </div>
+
+    <button id="reset">Вернуть ракурс</button>
+    <button id="spin">Автовращение: выкл.</button>
+
+    <p class="tip">
+      Перетаскивай приставку мышкой.
+      Ползунки X, Y, Ширина и Z помогают расположить экран.
+      Для управления игрой щёлкни по эмулятору справа.
+    </p>
+  </section>
+
+  <section class="panel">
+    <h2>Hello Kitty</h2>
+    <p class="tip">
+      Выбери свой .gba. Файл остаётся в браузере и не отправляется на сайт.
+    </p>
+    <input id="rom" type="file" accept=".gba">
+    <p id="status">Ожидание файла…</p>
+    <div id="game"></div>
+    <p class="tip">
+      Это тест: справа эмулятор, слева его изображение на 3D-дисплее.
+      Розовая надпись должна быть видна на приставке ещё до запуска игры.
+    </p>
+  </section>
+</div>
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+const viewer=document.querySelector('#viewer');
+const label=document.querySelector('#model-status');
+const videoStatus=document.querySelector('#video-status');
+
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(40,1,.01,1000);
+camera.position.set(0,0,6);
+
+const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+viewer.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xffffff,0x6b417f,3));
+
+const key=new THREE.DirectionalLight(0xffffff,3);
+key.position.set(4,7,9);
+scene.add(key);
+
+const fill=new THREE.DirectionalLight(0xd69dff,2);
+fill.position.set(-6,-3,-4);
+scene.add(fill);
+
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;
+controls.autoRotateSpeed=1.1;
+
+let model=null;
+const defaultCamera=new THREE.Vector3(0,0,6);
+
+const gameCanvas=document.createElement('canvas');
+gameCanvas.width=240;
+gameCanvas.height=160;
+
+const gameCtx=gameCanvas.getContext('2d',{alpha:false});
+gameCtx.fillStyle='#130c24';
+gameCtx.fillRect(0,0,240,160);
+
+const texture=new THREE.CanvasTexture(gameCanvas);
+texture.colorSpace=THREE.SRGBColorSpace;
+texture.minFilter=THREE.LinearFilter;
+texture.magFilter=THREE.NearestFilter;
+
+let screenPlane=null;
+
+function fitModel(object){
+  const box=new THREE.Box3().setFromObject(object);
+  if(box.isEmpty())throw Error('В модели нет геометрии');
+
+  const size=box.getSize(new THREE.Vector3());
+  const center=box.getCenter(new THREE.Vector3());
+
+  object.position.sub(center);
+  object.scale.setScalar(3/Math.max(size.x,size.y,size.z));
+
+  const scaled=new THREE.Box3().setFromObject(object);
+  object.position.sub(scaled.getCenter(new THREE.Vector3()));
+
+  const s=new THREE.Box3().setFromObject(object).getSize(new THREE.Vector3());
+  const distance=Math.max(s.x,s.y,s.z)*2.2;
+
+  defaultCamera.set(0,0,distance);
+  camera.position.copy(defaultCamera);
+  camera.near=.01;
+  camera.far=distance*30;
+  camera.updateProjectionMatrix();
+
+  controls.target.set(0,0,0);
+  controls.update();
+}
+
+function addScreen(root){
+  let glass=null;
+
+  root.traverse(child=>{
+    if(child.isMesh && child.name.toLowerCase().includes('gba_screen_glass')){
+      glass=child;
+    }
+  });
+
+  if(!glass)throw Error('Не найден gba_screen_glass');
+
+  root.updateMatrixWorld(true);
+
+const glassBounds = new THREE.Box3().setFromObject(glass);
+const modelBounds = new THREE.Box3().setFromObject(root);
+
+console.log('SCREEN GLASS:', {
+  position: glass.getWorldPosition(new THREE.Vector3()).toArray(),
+  size: glassBounds.getSize(new THREE.Vector3()).toArray(),
+  center: glassBounds.getCenter(new THREE.Vector3()).toArray(),
+  rotation: glass.rotation.toArray(),
+  scale: glass.scale.toArray()
+});
+
+console.log('MODEL:', {
+  min: modelBounds.min.toArray(),
+  max: modelBounds.max.toArray()
+});
+
+  const material=new THREE.MeshBasicMaterial({
+    map:texture,
+    side:THREE.DoubleSide,
+    depthTest:false,
+    depthWrite:false,
+    toneMapped:false
+  });
+
+  screenPlane=new THREE.Mesh(
+    new THREE.PlaneGeometry(1,2/3),
+    material
+  );
+
+  screenPlane.name='hello-kitty-game-screen';
+  screenPlane.renderOrder=999;
+// Поворачиваем игровую поверхность лицом к передней части GBA
+
+  // Плоскость прикрепляется к стеклу дисплея.
+scene.add(screenPlane);
+  function positionScreen(){
+  if (!model) return;
+
+  model.updateMatrixWorld(true);
+
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+
+  // Размер игровой области относительно ширины приставки
+  const width = size.x * 0.39;
+  const height = width * 2 / 3;
+
+ screenPlane.position.set(
+  center.x,
+  center.y + size.y * 0.02,
+  box.max.z - size.z * 0.08
+);
+
+  screenPlane.rotation.set(0, 0, 0);
+  screenPlane.scale.set(width, height * 1.5, 1);
+
+}
+
+  positionScreen();
+
+  // Тестовое изображение до запуска игры
+  gameCtx.fillStyle='#ff85c8';
+  gameCtx.fillRect(0,0,240,160);
+  gameCtx.fillStyle='white';
+  gameCtx.font='bold 22px Arial';
+  gameCtx.textAlign='center';
+  gameCtx.fillText('HELLO KITTY',120,88);
+
+  texture.needsUpdate=true;
+
+  videoStatus.textContent='Розовый тестовый экран должен быть виден на приставке';
+  console.log('Screen parent:',glass.name,'screen:',screenPlane);
+}
+
+async function loadModel(){
+  try{
+    const response=await fetch('./gba.glb');
+
+    if(!response.ok){
+      throw Error('HTTP '+response.status+' — не найден gba.glb');
+    }
+
+    const buffer=await response.arrayBuffer();
+
+    if(new TextDecoder().decode(new Uint8Array(buffer,0,4))!=='glTF'){
+      throw Error('Это не бинарный GLB');
+    }
+
+    const gltf=await new Promise((resolve,reject)=>
+      new GLTFLoader().parse(
+        buffer,
+        new URL('./',location.href).href,
+        resolve,
+        reject
+      )
+    );
+
+    model=gltf.scene;
+    scene.add(model);
+
+    fitModel(model);
+    addScreen(model);
+
+    label.textContent='✓ Модель и игровая поверхность готовы';
+  }catch(e){
+    label.textContent='Ошибка модели: '+e.message;
+    console.error(e);
+  }
+}
+
+loadModel();
+
+let sourceCanvas=null;
+let lastScan=0;
+let lastError='';
+
+function findGameCanvas(){
+  const canvases=[...document.querySelectorAll('#game canvas')]
+    .filter(c=>c.width>100&&c.height>80);
+
+  canvases.sort((a,b)=>
+    (b.width*b.height)-(a.width*a.height)
+  );
+
+  return canvases[0]||null;
+}
+
+function updateGameTexture(time){
+  if(!screenPlane||!window.__started)return;
+
+  if(time-lastScan>1500||!sourceCanvas||!sourceCanvas.isConnected){
+    sourceCanvas=findGameCanvas();
+    lastScan=time;
+  }
+
+  if(!sourceCanvas){
+    videoStatus.textContent='Ждём видеокадры эмулятора…';
+    return;
+  }
+
+  try{
+    const w=sourceCanvas.width;
+    const h=sourceCanvas.height;
+
+    const targetAspect=1.5;
+    const aspect=w/h;
+
+    let sx=0,sy=0,sw=w,sh=h;
+
+    if(aspect>targetAspect){
+      sw=h*targetAspect;
+      sx=(w-sw)/2;
+    }else{
+      sh=w/targetAspect;
+      sy=(h-sh)/2;
+    }
+
+    gameCtx.drawImage(
+      sourceCanvas,sx,sy,sw,sh,
+      0,0,240,160
+    );
+
+    texture.needsUpdate=true;
+
+    if(lastError)lastError='';
+
+    if(videoStatus.textContent!=='✓ Кадры игры передаются на 3D-экран'){
+      videoStatus.textContent='✓ Кадры игры передаются на 3D-экран';
+    }
+  }catch(e){
+    if(e.message!==lastError){
+      lastError=e.message;
+      videoStatus.textContent='Не удалось скопировать кадры: '+e.message;
+      console.error(e);
+    }
+  }
+}
+
+function resize(){
+  const w=viewer.clientWidth;
+  const h=viewer.clientHeight;
+
+  renderer.setSize(w,h,false);
+  camera.aspect=w/h;
+  camera.updateProjectionMatrix();
+}
+
+new ResizeObserver(resize).observe(viewer);
+resize();
+
+let previousFrame=0;
+
+function animate(time){
+  requestAnimationFrame(animate);
+
+  if(time-previousFrame>50){
+    updateGameTexture(time);
+    previousFrame=time;
+  }
+
+  controls.update();
+  renderer.render(scene,camera);
+}
+
+requestAnimationFrame(animate);
+
+document.querySelector('#reset').onclick=()=>{
+  if(!model)return;
+  camera.position.copy(defaultCamera);
+  controls.target.set(0,0,0);
+  controls.update();
+};
+
+document.querySelector('#spin').onclick=e=>{
+  controls.autoRotate=!controls.autoRotate;
+
+  e.currentTarget.textContent='Автовращение: '+
+    (controls.autoRotate?'вкл.':'выкл.');
+};
+</script>
+
+<script>
+const input=document.querySelector('#rom');
+const status=document.querySelector('#status');
+let romURL;
+
+input.addEventListener('change',()=>{
+  const file=input.files?.[0];
+  if(!file)return;
+
+  if(!file.name.toLowerCase().endsWith('.gba')){
+    status.textContent='Нужен распакованный .gba (не ZIP).';
+    return;
+  }
+
+  if(window.__started){
+    status.textContent='Для смены игры обнови страницу.';
+    return;
+  }
+
+  window.__started=true;
+  romURL=URL.createObjectURL(file);
+
+  window.EJS_player='#game';
+  window.EJS_core='gba';
+  window.EJS_gameUrl=romURL;
+  window.EJS_pathtodata='https://cdn.emulatorjs.org/stable/data/';
+  window.EJS_startOnLoaded=true;
+
+  status.textContent='Загружаем эмулятор…';
+
+  const script=document.createElement('script');
+  script.src='https://cdn.emulatorjs.org/stable/data/loader.js';
+
+  script.onerror=()=>{
+    status.textContent='Не удалось загрузить EmulatorJS';
+  };
+
+  document.body.appendChild(script);
+});
+</script>
+</body>
+</html>

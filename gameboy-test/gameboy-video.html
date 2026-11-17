@@ -1,0 +1,588 @@
+
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Pixel World — Hello Kitty GBA</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #a977cf, #271636 75%);
+  color: white;
+  font: 15px Arial, sans-serif;
+}
+
+main {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 18px;
+}
+
+h1 {
+  text-align: center;
+  color: #ffe1fc;
+  text-shadow: 0 0 15px #ff8bd5;
+}
+
+.panel {
+  padding: 18px;
+  background: #251432d9;
+  border: 2px solid #e6b9ff;
+  border-radius: 18px;
+}
+
+#viewer {
+  height: 570px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: radial-gradient(circle, #9a67ba55, #140e1b66);
+}
+
+#viewer canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+button {
+  background: #f1b8fa;
+  color: #37183c;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 12px;
+  cursor: pointer;
+  margin: 4px;
+}
+
+#status {
+  color: #f9d7fb;
+  line-height: 1.5;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.controls input {
+  width: 100%;
+  accent-color: #ef91ea;
+}
+
+.controls output {
+  font-size: 12px;
+  color: #f8d4fb;
+}
+
+.tip {
+  font-size: 13px;
+  color: #f4c7f6;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  #viewer {
+    height: 420px;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+
+<body>
+
+<main>
+
+<h1>🎀 Pixel World — Hello Kitty GBA</h1>
+
+<section class="panel">
+
+<div id="viewer"></div>
+
+<p id="status">Загружаем приставку…</p>
+
+<div class="controls">
+
+<label>
+Экран: X
+<input id="x" type="range" min="-1.5" max="1.5" step="0.005" value="0">
+<output id="x-out"></output>
+</label>
+
+<label>
+Экран: Y
+<input id="y" type="range" min="-1.5" max="1.5" step="0.005" value="0">
+<output id="y-out"></output>
+</label>
+
+<label>
+Экран: Z (глубина)
+<input id="z" type="range" min="-1.5" max="1.5" step="0.005" value="0">
+<output id="z-out"></output>
+</label>
+
+<label>
+Ширина экрана
+<input id="w" type="range" min="0.1" max="1.5" step="0.005" value="0.65">
+<output id="w-out"></output>
+</label>
+
+<label>
+Поворот X
+<input id="rx" type="range" min="-180" max="180" step="1" value="0">
+<output id="rx-out"></output>
+</label>
+
+<label>
+Поворот Y
+<input id="ry" type="range" min="-180" max="180" step="1" value="0">
+<output id="ry-out"></output>
+</label>
+
+<label>
+Поворот Z
+<input id="rz" type="range" min="-180" max="180" step="1" value="0">
+<output id="rz-out"></output>
+</label>
+
+</div>
+
+<button id="reset">Вернуть ракурс</button>
+<button id="spin">Автовращение: выкл.</button>
+<button id="reset-screen">Сбросить экран</button>
+<button id="save">Скопировать настройки</button>
+<button id="play">Запустить видео</button>
+
+<p class="tip">
+Вращай приставку мышкой. Ползунки позволяют настроить
+положение, размер и поворот видео.
+</p>
+
+</section>
+
+</main>
+
+<video
+  id="kitty"
+  src="./hello-kitty-loop.mp4"
+  muted
+  loop
+  playsinline
+  preload="auto"
+  crossorigin="anonymous"
+  style="display:none">
+</video>
+
+<script type="module">
+
+import * as THREE from 'three';
+
+import {GLTFLoader} from
+'three/addons/loaders/GLTFLoader.js';
+
+import {OrbitControls} from
+'three/addons/controls/OrbitControls.js';
+
+const viewer = document.querySelector('#viewer');
+const status = document.querySelector('#status');
+const video = document.querySelector('#kitty');
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+  40,
+  1,
+  0.01,
+  1000
+);
+
+camera.position.set(0, 0, 6);
+
+const renderer = new THREE.WebGLRenderer({
+  alpha: true,
+  antialias: true
+});
+
+renderer.setPixelRatio(
+  Math.min(window.devicePixelRatio, 2)
+);
+
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+viewer.appendChild(renderer.domElement);
+
+scene.add(
+  new THREE.HemisphereLight(
+    0xffffff,
+    0x6b417f,
+    3
+  )
+);
+
+const light = new THREE.DirectionalLight(
+  0xffffff,
+  3
+);
+
+light.position.set(4, 7, 9);
+scene.add(light);
+
+const fill = new THREE.DirectionalLight(
+  0xd69dff,
+  2
+);
+
+fill.position.set(-6, -3, -4);
+scene.add(fill);
+
+const orbit = new OrbitControls(
+  camera,
+  renderer.domElement
+);
+
+orbit.enableDamping = true;
+orbit.autoRotateSpeed = 1.1;
+
+let model = null;
+let screen = null;
+let defaultDistance = 6;
+
+const defaults = {
+  x: 0,
+  y: 0,
+  z: 0,
+  w: 0.65,
+  rx: 0,
+  ry: 0,
+  rz: 0
+};
+
+const fields = Object.keys(defaults);
+
+const storageKey = 'pixel-gba-video-v2';
+
+let saved = null;
+
+try {
+  saved = JSON.parse(
+    localStorage.getItem(storageKey) || 'null'
+  );
+} catch (error) {
+  saved = null;
+}
+
+for (const id of fields) {
+  const input = document.getElementById(id);
+
+  input.value = Number.isFinite(saved?.[id])
+    ? saved[id]
+    : defaults[id];
+}
+
+const tex = new THREE.VideoTexture(video);
+
+tex.colorSpace = THREE.SRGBColorSpace;
+tex.minFilter = THREE.LinearFilter;
+tex.magFilter = THREE.NearestFilter;
+tex.generateMipmaps = false;
+
+const material = new THREE.MeshBasicMaterial({
+  map: tex,
+  side: THREE.DoubleSide,
+  depthTest: false,
+  depthWrite: false,
+  toneMapped: false
+});
+
+let screenBase = {
+  x: 0,
+  y: 0,
+  z: 0
+};
+
+function getValues() {
+  return Object.fromEntries(
+    fields.map(id => [
+      id,
+      Number(document.getElementById(id).value)
+    ])
+  );
+}
+
+function updateScreen() {
+  const values = getValues();
+
+  for (const id of fields) {
+    document.getElementById(id + '-out').textContent =
+      values[id].toFixed(id.startsWith('r') ? 0 : 3);
+  }
+
+  if (screen) {
+    screen.position.set(
+      screenBase.x + values.x,
+      screenBase.y + values.y,
+      screenBase.z + values.z
+    );
+
+    screen.rotation.set(
+      THREE.MathUtils.degToRad(values.rx),
+      THREE.MathUtils.degToRad(values.ry),
+      THREE.MathUtils.degToRad(values.rz)
+    );
+
+    screen.scale.set(
+      values.w,
+      values.w,
+      1
+    );
+  }
+
+  localStorage.setItem(
+    storageKey,
+    JSON.stringify(values)
+  );
+}
+
+for (const id of fields) {
+  document.getElementById(id)
+    .addEventListener('input', updateScreen);
+}
+
+
+async function load() {
+  try {
+    const response = await fetch('./gba.glb');
+
+    if (!response.ok) {
+      throw new Error('Не найден gba.glb');
+    }
+
+    const buffer = await response.arrayBuffer();
+
+    const gltf = await new Promise((resolve, reject) => {
+      new GLTFLoader().parse(
+        buffer,
+        new URL('./', location.href).href,
+        resolve,
+        reject
+      );
+    });
+
+    model = gltf.scene;
+    scene.add(model);
+
+    // Нормализуем размер и положение приставки
+    const original = new THREE.Box3().setFromObject(model);
+    const size = original.getSize(new THREE.Vector3());
+    const center = original.getCenter(new THREE.Vector3());
+
+    const scale = 3 / Math.max(size.x, size.y, size.z);
+
+    model.scale.setScalar(scale);
+    model.position.copy(center).multiplyScalar(-scale);
+    model.updateMatrixWorld(true);
+
+    const bounds = new THREE.Box3().setFromObject(model);
+    const scaled = bounds.getSize(new THREE.Vector3());
+
+    defaultDistance = Math.max(
+      scaled.x,
+      scaled.y,
+      scaled.z
+    ) * 2.2;
+
+    camera.position.set(0, 0, defaultDistance);
+    camera.near = 0.01;
+    camera.far = defaultDistance * 30;
+    camera.updateProjectionMatrix();
+
+    orbit.target.set(0, 0, 0);
+    orbit.update();
+
+    // Экран создаём в локальных координатах gba.glb
+    // Его размеры соответствуют предполагаемой
+    // игровой области GBA, а не всему стеклу.
+   
+    // Реальная область дисплея в исходной модели
+    const screenWidth = 0.055;
+    const screenHeight = screenWidth * 2 / 3;
+
+    const screenMaterial = new THREE.MeshBasicMaterial({
+      map: tex,
+      side: THREE.DoubleSide,
+      depthTest: false,
+      depthWrite: false,
+      toneMapped: false
+    });
+
+    screen = new THREE.Mesh(
+      new THREE.PlaneGeometry(screenWidth, screenHeight),
+      screenMaterial
+    );
+
+    screen.name = 'hello-kitty-video-screen';
+
+    // Координаты относительно исходной модели
+    screen.position.set(
+      0,
+      0.046,
+      0.012
+    );
+
+    screen.rotation.set(0, 0, 0);
+    screen.renderOrder = 999;
+
+    // Модель уже масштабирована.
+    // Добавляем экран внутрь неё.
+    model.add(screen);
+
+    // Не вызываем старую updateScreen():
+    // она применяет несовместимый масштаб.
+
+    screen.rotation.set(0, 0, 0);
+
+    // ВАЖНО: экран является частью 3D-модели
+    model.add(screen);
+
+    // Старые настройки не применяем:
+    // они рассчитаны на другую систему координат.
+    screenBase = {
+      x: 0,
+      y: 0.047,
+      z: 0.0115
+    };
+
+    // Новая геометрия уже имеет нужные размеры.
+    // Не вызываем старую updateScreen(),
+    // потому что она изменяет масштаб плоскости.
+
+    status.textContent =
+      '✓ Модель загружена. Видео закреплено на дисплее.';
+
+    await video.play();
+
+  } catch (error) {
+    console.error(error);
+    status.textContent = 'Ошибка: ' + error.message;
+  }
+}
+
+
+load();
+
+video.addEventListener('error', () => {
+  status.textContent =
+    'Ошибка загрузки hello-kitty-loop.mp4';
+});
+
+document.querySelector('#play').onclick = () => {
+  video.play().catch(error => {
+    status.textContent =
+      'Ошибка видео: ' + error.message;
+  });
+};
+
+document.querySelector('#reset').onclick = () => {
+  camera.position.set(
+    0,
+    0,
+    defaultDistance
+  );
+
+  orbit.target.set(0, 0, 0);
+  orbit.update();
+};
+
+document.querySelector('#spin').onclick = event => {
+  orbit.autoRotate = !orbit.autoRotate;
+
+  event.currentTarget.textContent =
+    'Автовращение: ' +
+    (orbit.autoRotate ? 'вкл.' : 'выкл.');
+};
+
+document.querySelector('#reset-screen').onclick = () => {
+  for (const id of fields) {
+    document.getElementById(id).value = defaults[id];
+  }
+
+  updateScreen();
+
+  status.textContent =
+    'Настройки экрана сброшены.';
+};
+
+document.querySelector('#save').onclick = () => {
+  const values = getValues();
+
+  navigator.clipboard.writeText(
+    JSON.stringify(values)
+  ).then(() => {
+    status.textContent =
+      '✓ Настройки скопированы!';
+  }).catch(() => {
+    status.textContent =
+      'Не удалось скопировать настройки.';
+  });
+};
+
+function resize() {
+  const width = viewer.clientWidth;
+  const height = viewer.clientHeight;
+
+  renderer.setSize(
+    width,
+    height,
+    false
+  );
+
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+}
+
+new ResizeObserver(resize).observe(viewer);
+
+resize();
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  orbit.update();
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+</script>
+
+</body>
+</html>
